@@ -1,12 +1,17 @@
 import React from 'react';
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Image } from "react-bootstrap";
 import { resultData } from '../stores/result/resultData';
-
-import catImage from "./../assets/cat/cat.jpg";
+import { ResultType } from '../stores/result/types';
 
 const ResultPage = () => {
+  const [searchParams] = useSearchParams();
+  const mbti = searchParams.get("mbti");
+  const testResult = resultData.find((cat: ResultType) => cat.mbti === mbti);
+
+  console.log({testResult})
+
   const navigate = useNavigate();
   const handleClickButton = () => {
     navigate("/");
@@ -15,17 +20,18 @@ const ResultPage = () => {
   return (
     <Wrapper>
       <ContentsWrapper>
-        <SubTitle>{resultData[0].name}</SubTitle>
+        <SubTitle>{testResult?.name}</SubTitle>
         <LogoImage>
           <Image
-            src={resultData[0].image}
+            src={testResult?.image}
             className="rounded-circle"
             width="370px"
             height="340px"
           />
         </LogoImage>
-        <Desc>{resultData[0].desc}</Desc>
-        <Best>잘 맞는 MBTI : {resultData[0].best}</Best>
+        <Desc>나와 성향이 맞는 고양이는 {mbti}형 고양이입니다.</Desc>
+        <Desc>{testResult?.desc}</Desc>
+        <Best>잘 맞는 MBTI : {testResult?.best}</Best>
         <Button variant="outline-secondary" onClick={handleClickButton}>
           테스트 다시하기
         </Button>

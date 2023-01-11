@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { questionData } from '../stores/question/questionData';
 import { Button } from 'react-bootstrap';
 import Header from '../components/Header';
-import { useNavigate } from 'react-router-dom';
+import { createSearchParams, useNavigate } from 'react-router-dom';
 
 const QuestionPage = () => {
   const [questionNumber, setQuestionNumber] = useState(0);
@@ -28,7 +28,21 @@ const QuestionPage = () => {
       setQuestionNumber(questionNumber + 1);
       // 마지막 문제일 경우
     } else {
-      navigate("/result")
+      const mbti = newScore.reduce(
+        (acc, cur) =>
+          acc +
+          (cur.score === 2 ? cur.id.substring(0, 1) : cur.id.substring(1, 2)),
+        '',
+      );
+
+      console.log("mbti", mbti);
+
+      navigate({
+        pathname: '/result',
+        search: `?${createSearchParams({
+          mbti: mbti,
+        })}`,
+      });
     }
 
     // if (type === 'EI') {
