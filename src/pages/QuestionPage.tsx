@@ -1,15 +1,61 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { questionData } from '../stores/question/questionData';
 import { Button } from 'react-bootstrap';
 import Header from '../components/Header';
+import { useNavigate } from 'react-router-dom';
 
 const QuestionPage = () => {
   const [questionNumber, setQuestionNumber] = useState(0);
+  const [totalScore, setTotalScore] = useState([
+    { id: 'EI', score: 0 },
+    { id: 'SN', score: 0 },
+    { id: 'TF', score: 0 },
+    { id: 'JP', score: 0 },
+  ]);
 
-  const handleClickAnswer = () => {
-    setQuestionNumber(questionNumber + 1);
+  const navigate = useNavigate();
+
+  const handleClickAnswer = (ans: number, type: string) => {
+    const newScore = totalScore.map(s =>
+      s.id === type ? { id: s.id, score: s.score + ans } : s,
+    );
+
+    setTotalScore(newScore);
+
+    // 마지막 문제가 아닐 경우
+    if (questionData.length !== questionNumber + 1) {
+      setQuestionNumber(questionNumber + 1);
+      // 마지막 문제일 경우
+    } else {
+      navigate("/result")
+    }
+
+    // if (type === 'EI') {
+    //   // 기존 스코어에 대한 새로운 스코어 값
+    //   const addScore = totalScore[0].score + ans;
+    //   // 새로운 스코어를 변환한 새로운 객체
+    //   const object = { id: 'EI', score: addScore };
+    //   // 새로운 객체를 기존에 토탈 스코어 변경
+    //   totalScore.splice(0, 1, object);
+    // } else if (type === 'SN') {
+    //   const addScore = totalScore[0].score + ans;
+    //   const object = { id: 'SN', score: addScore };
+    //   totalScore.splice(0, 1, object);
+    // } else if (type === 'TF') {
+    //   const addScore = totalScore[0].score + ans;
+    //   const object = { id: 'TF', score: addScore };
+    //   totalScore.splice(0, 1, object);
+    // } else if (type === 'JP') {
+    //   const addScore = totalScore[0].score + ans;
+    //   const object = { id: 'JP', score: addScore };
+    //   totalScore.splice(0, 1, object);
+    // }
   };
+
+  useEffect(() => {
+    console.log(totalScore[0].score);
+  }, [totalScore[0].score]);
 
   return (
     <Wrapper>
@@ -22,16 +68,20 @@ const QuestionPage = () => {
             style={{
               marginBottom: '20px',
               padding: '20px',
-              width: "800px"
+              width: '800px',
             }}
-            onClick={handleClickAnswer}
+            onClick={() =>
+              handleClickAnswer(1, questionData[questionNumber].type)
+            }
           >
             {questionData[questionNumber].answera}
           </Button>
           <Button
             variant="outline-secondary"
             style={{ padding: '20px' }}
-            onClick={handleClickAnswer}
+            onClick={() =>
+              handleClickAnswer(0, questionData[questionNumber].type)
+            }
           >
             {questionData[questionNumber].answerb}
           </Button>
@@ -67,5 +117,4 @@ const ButtonGroup = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 0 20px;
 `;
